@@ -1,0 +1,263 @@
+const mongoose = require("mongoose");
+const Joi = require("joi");
+const jwt = require("jsonwebtoken");
+
+const schema = mongoose.Schema(
+  {
+    names: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      unique: true,
+      required: true,
+    },
+    nid: {
+      type: String,
+      unique: true,
+      required: true,
+    },
+    phone: {
+      type: String,
+      required: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+schema.methods.generateAuthToken = function () {
+  return jwt.sign(
+    {
+      id: this._id,
+    },
+    process.env.TOKEN,
+    {
+      expiresIn: "5h",
+    }
+  );
+};
+
+const User = mongoose.model("User", schema);
+
+const validation = (body) => {
+  return Joi.object()
+    .keys({
+      names: Joi.string().required(),
+      email: Joi.string().email().required(),
+      password: Joi.string().required(),
+      phone: Joi.string().required(),
+      nid: Joi.string().required(),
+    })
+    .validate(body);
+};
+const loginvalidation = (body) => {
+  return Joi.object()
+    .keys({
+      email: Joi.string().email().required(),
+      password: Joi.string().required(),
+    })
+    .validate(body);
+};
+module.exports = { User, validation, loginvalidation };
+exports.createUser = async (req, res) => {
+  try {
+    const { names, email, password, phone, nid } = req.body;
+    const { error } = validation(req.body);
+    if (error) {
+      return res.status(404).send({ message: `Error encountered .. ${error}` });
+    }
+
+    const userwithemailandid = await User.findOne({ email: email, nid: nid });
+    if (userwithemailandid) {
+      return res
+        .status(400)
+        .send({ message: "User with such an email and NID already exists" });
+    }
+
+    //used when we have admin user;
+    //   let count = await User.countDocuments({});
+    req.body.password = await utils.hashPassword(req.body.password);
+    const newUser = new User(req.body);
+
+    const status = await newUser.save();
+
+    return res.status(201).send({ data: status, message: "Created" });
+  } catch (e) {
+    console.log(e);
+    return res.status(500).send(e.message);
+  }
+};
+
+exports.loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const { error } = loginvalidation(req.body);
+
+    if (error) {
+      res.status(404).send({ message: `Error encounted ${error}` });
+    }
+
+    const user = await User.findOne({ email: email });
+    console.log(user);
+
+    if (!user) {
+      return res
+        .status(400)
+        .send({ message: "User with such credentials not found" });
+    }
+    const validpass = await bcrypt.compare(password, user.password);
+    if (!validpass) {
+      return res.status(404).send({ message: "Invalid credentials" });
+    }
+    return res.status(200).send({
+      message: "Logged in successfully",
+      token: await user.generateAuthToken(),
+    });
+  } catch (e) {
+    return res.status(500).send(`Error encountered ... ${e}`);
+  }
+};
+
+
+
+  <div className="w-1/4 h-[100vh] bg-blue-300 ">
+         <div className=" flex flex-col items-center my-10">
+             <p className="py-2 ">Users</p>
+             <p className="py-2">Car owners</p>
+             <p className="py-2">Cars</p>
+         </div>
+         <div className="flex flex-col absolute bottom-10 left-[10%] mt-auto ">
+            <p>Teta Lena</p>
+        </div>
+        </div>
+
+
+         <div className="flex h-screen bg-gray-100">
+   <aside id="logo-sidebar" className="fixed top-0 left-0 z-40 w-64  h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700" aria-label="Sidebar">
+    <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
+      <ul className="space-y-2 font-medium">
+        <li>
+          <a href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+       
+            <span className="ml-3">Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+        
+            <span className="flex-1 ml-3 whitespace-nowrap">Kanban</span>
+            <span className="inline-flex items-center justify-center px-2 ml-3 text-sm font-medium text-gray-800 bg-gray-200 rounded-full dark:bg-gray-700 dark:text-gray-300">4</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+          
+            <span className="ml-3">Messages</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+          
+            <span className="ml-3">Settings</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </aside>
+</div>
+
+
+     {
+            testData.map((data)=> {
+                 return (
+                    <>
+                    <tr className="bg-white border-b">
+                        <td className=" px-6 py-3" >{data.name}</td>
+                        <td className=" px-6 py-3" >{data.address}</td>
+                        <td className=" px-6 py-3" >{data.email}</td>
+                        <td className=" px-6 py-3">{data.createdDate}</td>
+                        <td  className=" px-6 py-3">{data.carModel}</td>
+
+                    </tr>
+                    </>
+                                 )
+            })
+        }
+
+
+        const testData = [
+        {
+          name: "John Doe",
+          address: "123 Main Street, City, Country",
+          email: "johndoe@example.com",
+          createdDate: "2022-01-01",
+          carModel: "Toyota Camry"
+        },
+        {
+          name: "Jane Smith",
+          address: "456 Elm Street, City, Country",
+          email: "janesmith@example.com",
+          createdDate: "2022-02-01",
+          carModel: "Honda Civic"
+        },
+        {
+          name: "Mike Johnson",
+          address: "789 Oak Street, City, Country",
+          email: "mikejohnson@example.com",
+          createdDate: "2022-03-01",
+          carModel: "Ford Mustang"
+        },
+        {
+            name: "Mike Johnson",
+            address: "789 Oak Street, City, Country",
+            email: "mikejohnson@example.com",
+            createdDate: "2022-03-01",
+            carModel: "Ford Mustang"
+          },  {
+            name: "Mike Johnson",
+            address: "789 Oak Street, City, Country",
+            email: "mikejohnson@example.com",
+            createdDate: "2022-03-01",
+            carModel: "Ford Mustang"
+          },  {
+            name: "Mike Johnson",
+            address: "789 Oak Street, City, Country",
+            email: "mikejohnson@example.com",
+            createdDate: "2022-03-01",
+            carModel: "Ford Mustang"
+          },  {
+            name: "Mike Johnson",
+            address: "789 Oak Street, City, Country",
+            email: "mikejohnson@example.com",
+            createdDate: "2022-03-01",
+            carModel: "Ford Mustang"
+          },  {
+            name: "Mike Johnson",
+            address: "789 Oak Street, City, Country",
+            email: "mikejohnson@example.com",
+            createdDate: "2022-03-01",
+            carModel: "Ford Mustang"
+          },
+          {
+            name: "Mike Johnson",
+            address: "789 Oak Street, City, Country",
+            email: "mikejohnson@example.com",
+            createdDate: "2022-03-01",
+            carModel: "Ford Mustang"
+          },
+          {
+            name: "Mike Johnson",
+            address: "789 Oak Street, City, Country",
+            email: "mikejohnson@example.com",
+            createdDate: "2022-03-01",
+            carModel: "Ford Mustang"
+          },
+        // Add more objects as needed
+    ];
