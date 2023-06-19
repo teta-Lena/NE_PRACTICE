@@ -12,7 +12,6 @@ const validSchema = yup.object().shape({
 });
 
 const Login = () => {
-  const [credentials, setCredentials] = useState({ email: "", password: "" });
   const navigate = useNavigate();
   const {
     register,
@@ -43,11 +42,16 @@ const Login = () => {
 
   return (
     <div className=" w-full h-full flex ">
-      <div className="w-2/4 bg-blue-600 h-[100vh]">
+      <div className="w-2/4 bg-[#3D5A80] h-[100vh]">
         <div className="flex flex-col justify-around h-full my-auto">
-          <p className="font-bold m-auto text-4xl text-white">
-            Management system
-          </p>
+          <div className="justify-center flex flex-col items-center">
+            <p className="font-bold m-auto text-4xl text-black text-center">
+              EDMS
+            </p>
+            <p className="font-bold m-auto text-xl text-white w-[75%] text-center">
+              Equiment distribution system for Rwanda TVET Board
+            </p>
+          </div>
         </div>
       </div>
 
@@ -56,9 +60,9 @@ const Login = () => {
           className="w-[60%] m-auto"
           onSubmit={handleSubmit(onSubmitHandler)}
         >
-          <div className=" flex-col items-center my-8">
-            <p className="font-bold text-xl">Login</p>
-            <p className="text-gray-400">Sign in to use your account</p>
+          <div className=" flex-col justify-center my-10">
+            <p className="font-bold text-3xl text-center">Login</p>
+            <p className="text-gray-400 text-center">Log in to continue....</p>
           </div>
           <div className="mb-6">
             <label className="block mb-2 text-sm font-medium text-gray-900">
@@ -82,19 +86,19 @@ const Login = () => {
               type="password"
               id="password"
               {...register("password")}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 "
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
               required
               placeholder="Enter your password"
             />
             <p className="text-red-800">{errors.password?.message}</p>
           </div>
-
-          <button
-            type="submit"
-            className="text-white bg-blue-700 focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
-          >
-            Log in
-          </button>
+          <div>
+            <input
+              type="submit"
+              value={"Login"}
+              className="bg-[#293241]  text-white font-bold border border-gray-300 text-sm rounded-lg block w-full p-2.5"
+            />
+          </div>
         </form>
       </div>
     </div>

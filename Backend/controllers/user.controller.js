@@ -1,62 +1,44 @@
-const User = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const validator = require("../utils/user.validation");
 const tokenService = require("../services/tokenService");
+const db = require("../config/database"); // Assuming you have a separate file for MySQL database connection
 
-exports.createUser = async (req, res) => {
+const userSchema = require("../models/user.model");
+
+exports.signup = async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: "Email and password are required" });
+  }
+
   try {
-    const { fname, lname, email, password } = req.body;
-    const { error } = validator.validate(req.body);
-    if (error) {
-      console.log(error.message);
-      return res.status(400).send(error);
-    }
-
-    if (!(email && password && fname && lname)) {
-      return res.status(400).send("All inputs must be filled");
-    }
-
-    const userexists = await User.findOne({ email });
+    const user = { email, password };
+    const userexists = await userSchema.findUserByEmail(user.email);
     if (userexists) {
       return res
-        .status(409)
-        .send("User already exists. Login or use another email");
+        .status(404)
+        .send({ message: "User with such credentials already exists" });
     }
 
-    const salt = await bcrypt.genSalt(10);
-
-    const encryptedpass = await bcrypt.hash(password, salt);
-
-    const user = await User.create({
-      fname,
-      lname,
-      email: email.toLowerCase(),
-      password: encryptedpass,
-      //add userrole if u really have it
-    });
-
-    // const token = jwt.sign({ userid: user._id, email }, process.env.TOKEN_KEY, {
-    //   expiresIn: "2h",
-    // });
-
-    // user.token = token;
-    user.save();
-    return res.status(201).json(user);
-  } catch (e) {
-    return res.status(500).send({ message: `Error ${e}` });
+    const usercreated = await userSchema.createUser(user);
+    return res.status(201).json({ user });
+  } catch (error) {
+    console.error("Error creating user:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
 exports.getUsers = async (req, res) => {
   try {
-    const filters = {};
-    const options = {
-      limit: req.query.limit || 1,
-      page: req.query.page || 1,
-    };
-    // filters first param
-    const users = await User.paginate(filters, options);
-    if (users) {
+    const limit = req.query.limit || 1;
+    const page = req.query.page || 1;
+    const offset = (page - 1) * limit;
+
+    const getUsersQuery = "SELECT * FROM users LIMIT ? OFFSET ?";
+    const users = await db.query(getUsersQuery, [limit, offset]);
+
+    if (users.length > 0) {
       res.status(200).json({
         success: true,
         users,
@@ -73,22 +55,24 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!(email && password)) {
-      return res.status(400).json("All inputs are required");
+      return res.status(400).json({ message: "All inputs are required" });
     }
-    const user = await User.findOne({ email: email });
+
+    const user = await userSchema.findUserByEmail(email);
     if (!user) {
-      return res.status(404).send({ message: "Invalid credentials" });
+      return res.status(404).json({ message: "Invalid credentials" });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
-    const accesstoken = await tokenService.generateAuthTokens(user);
+
+    const accessToken = await tokenService.generateAuthTokens(user);
 
     return res.status(200).json({
       success: true,
-      token: accesstoken,
+      token: accessToken,
     });
   } catch (error) {
     return res
@@ -96,16 +80,21 @@ exports.login = async (req, res) => {
       .json({ success: false, error: "Internal server error" + error });
   }
 };
+
 exports.getUserProfile = async (req, res) => {
   try {
-   const user = req.user;
-   if(!user)
-      return res.status(400).send("User don't exist")
+    const userId = req.user.id;
+    const getUserQuery = "SELECT * FROM users WHERE id = ?";
+    const user = await db.query(getUserQuery, [userId]);
 
-      return res.status(200).json({
-        user,
-        success: true
-      })
+    if (user.length === 0) {
+      return res.status(400).send("User doesn't exist");
+    }
+
+    return res.status(200).json({
+      user: user[0],
+      success: true,
+    });
   } catch (error) {
     return res
       .status(500)

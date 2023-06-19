@@ -1,5 +1,5 @@
 {
-  "name": "nt",
+  "name": "Backend",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -21,6 +21,8 @@
     "moment": "^2.29.4",
     "mongoose": "^7.3.0",
     "mongoose-paginate-v2": "^1.7.1",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.4.0",
     "nodemon": "^2.0.22",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",

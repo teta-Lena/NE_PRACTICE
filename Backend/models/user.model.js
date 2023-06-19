@@ -1,38 +1,33 @@
-const mongoose = require("mongoose");
-const paginate = require("mongoose-paginate-v2");
+// userSchema.js
 
-const userSchema = new mongoose.Schema({
-  fname: {
-    type: String,
-    default: null,
-  },
-  lname: {
-    type: String,
-    default: null,
-  },
-  email: {
-    type: String,
-    require: true,
-    unique: true,
-  },
-  password: {
-    type: String,
-    private: true,
-  },
+const connection = require("../config/database"); // Path to your db.js file
 
-  userrole: {
-    type: String,
-    enum: ["admin", "user"],
-    default: "user",
-  },
-  // roles:[{type:String,default:user}]
-});
+exports.createUser = (user) => {
+  return new Promise((resolve, reject) => {
+    const insertUserQuery = "INSERT INTO users (email, password) VALUES (?, ?)";
+    connection.query(
+      insertUserQuery,
+      [user.email, user.password],
+      (error, results) => {
+        if (error) {
+          console.error("Error creating user:", error);
+          return reject(error);
+        }
+        return resolve(results.insertId);
+      }
+    );
+  });
+};
 
-// userSchema.plugin(toJSON);
-// userSchema.plugin(paginate);
-
-userSchema.plugin(paginate);
-
-const User = mongoose.model("User", userSchema);
-
-module.exports = User;
+exports.findUserByEmail = (email) => {
+  return new Promise((resolve, reject) => {
+    const selectUserQuery = "SELECT * FROM users WHERE email = ?";
+    connection.query(selectUserQuery, [email], (error, results) => {
+      if (error) {
+        console.error("Error fetching user:", error);
+        return reject(error);
+      }
+      return resolve(results[0]);
+    });
+  });
+};
