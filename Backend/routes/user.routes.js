@@ -9,7 +9,7 @@ const admin = require("../middleware/admin.middleware");
 
 router.post("/signup", usercontroller.signup);
 
-// router.post("/login", usercontroller.login);
+router.post("/login", usercontroller.login);
 
 // // auth("manageUsers")
 // router.get("/all", auth, admin, usercontroller.getUsers);
