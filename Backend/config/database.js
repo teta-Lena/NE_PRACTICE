@@ -23,12 +23,13 @@ const createAdminQuery = `
     password VARCHAR(255) NOT NULL
   )
 `;
-
+// const createEmployeeWithDetails
 connection.query(createAdminQuery, (error, results) => {
   if (error) {
     console.error("Error creating Admin table:", error);
     return;
   }
+  ``;
   console.log("Admin table created successfully");
 });
 

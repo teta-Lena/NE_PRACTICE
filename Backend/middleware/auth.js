@@ -1,22 +1,29 @@
-// const jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
+const config = require("../config/dbconfig");
+const User = require("../models/users.model");
 
-// const auth =async (req, res, next) => {
-//   if (!req.header("Authorization"))
-//     return res.status(401).send("UNAUTHORIZED .. Log in first");
-//   //header on the frontend
-//   var token = req.header("Authorization").trim();
-//   console.log(token, "the token");
-//   if (!token) return res.status(401).send("UNAUTHORIZED ... Log in first");
-//   try {
-//     token = token.replace("Bearer", "").trim();
-//     let user = jwt.verify(token, process.env.ACCESS_TOKEN_KEY.trim());
-//     const userInfo = await User.findById(user.userId);
-//     delete userInfo.password;
-//     req.user = userInfo;
-//     next();
-//   } catch (e) {
-//     return res.status(500).send({ message: `Error ${e}` });
-//   }
-// };
+const authMiddleware = {};
 
-// module.exports = auth;
+authMiddleware.authenticate = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ message: "No token provided" });
+    }
+
+    const decodedToken = jwt.verify(token, config.jwtSecret);
+    const user = await User.findByPk(decodedToken.id);
+
+    if (!user) {
+      return res.status(401).json({ message: "Invalid token" });
+    }
+
+    req.user = user;
+    next();
+  } catch (error) {
+    res.status(401).json({ message: "Authentication failed" });
+  }
+};
+
+module.exports = authMiddleware;

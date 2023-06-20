@@ -35,19 +35,10 @@
             "schema": {
               "type": "object",
               "properties": {
-                "fname": {
-                  "example": "any"
-                },
-                "lname": {
-                  "example": "any"
-                },
                 "email": {
                   "example": "any"
                 },
                 "password": {
-                  "example": "any"
-                },
-                "userrole": {
                   "example": "any"
                 }
               }
@@ -63,9 +54,6 @@
           },
           "409": {
             "description": "Conflict"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       }
@@ -99,34 +87,57 @@
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       }
     },
-    "/users/all": {
-      "get": {
+    "/employee/create-employee": {
+      "post": {
         "description": "",
         "parameters": [
           {
-            "name": "limit",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "type": "string"
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "firstname": {
+                  "example": "any"
+                },
+                "lastname": {
+                  "example": "any"
+                },
+                "nationalId": {
+                  "example": "any"
+                },
+                "telephone": {
+                  "example": "any"
+                },
+                "email": {
+                  "example": "any"
+                },
+                "department": {
+                  "example": "any"
+                },
+                "position": {
+                  "example": "any"
+                },
+                "laptopManufacturer": {
+                  "example": "any"
+                },
+                "laptopModel": {
+                  "example": "any"
+                },
+                "laptopSerialNumber": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "201": {
+            "description": "Created"
           },
           "500": {
             "description": "Internal Server Error"

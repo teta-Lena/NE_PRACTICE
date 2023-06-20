@@ -25,7 +25,6 @@ const Login = () => {
     try {
       const res = await axios.post("/users/login", credentials);
       console.log(res);
-
       toast.success(res.data.message);
       localStorage.setItem("token", res.data.token);
       navigate("/dashboard");

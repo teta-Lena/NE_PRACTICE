@@ -3,7 +3,8 @@ import "./App.css";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
-import WelcomePage from "./pages/WelcomePage";
+import NavBar from "./components/NavBar";
+import AddEmployee from "./pages/AddEmployee";
 
 function App() {
   return (
@@ -16,6 +17,15 @@ function App() {
             <ProtectedRoute>
               <Dashboard />
             </ProtectedRoute>
+          }
+        />
+        <Route path="/navbar" element={<NavBar />} />
+        <Route
+          path="/addemployee"
+          element={
+            // <ProtectedRoute>
+            <AddEmployee />
+            // </ProtectedRoute>
           }
         />
       </Routes>

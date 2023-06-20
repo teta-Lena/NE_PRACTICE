@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import Sidebar from "../components/Sidebar";
-
+import NavBar from "../components/NavBar";
 const Dashboard = () => {
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -46,17 +45,21 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="w-full h-[100vh] flex">
-      {userInfo && <Sidebar fname={userInfo?.fname} lname={userInfo?.lname} />}
+    <div className="w-full h-[100vh] flex flex-col">
+      <NavBar />
       <div className=" w-[60%] flex flex-col rounded-3xl m-auto">
         <table className=" w-full text-sm text-left text-gray-500">
           <thead className="text-xs text-gray-700  uppercase border-gray-200 bg-gray-50 ">
             <tr className="">
-              <th className=" px-6 py-3">Name</th>
-              <th className="  px-6 py-3">Address</th>
+              <th className=" px-6 py-3">First name</th>
+              <th className="  px-6 py-3">Last name</th>
+              <th className="  px-6 py-3">NID</th>
               <th className="  px-6 py-3">Email</th>
-              <th className="  px-6 py-3">Created Date</th>
-              <th className="  px-6 py-3">Car Model</th>
+              <th className="  px-6 py-3">Department</th>
+              <th className="  px-6 py-3">Position</th>
+              <th className="  px-6 py-3">Laptop manufacturer</th>
+              <th className="  px-6 py-3">Serial number</th>
+              <th className="  px-6 py-3">Model</th>
             </tr>
           </thead>
           <tbody>
